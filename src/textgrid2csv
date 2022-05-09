@@ -77,15 +77,19 @@ if __name__ == "__main__":
     tg = textgrids.TextGrid()
     tg.read(textgrid_filename)
 
-    csv_w = csv.DictWriter(sys.stdout, fieldnames = (
-        "line_n",
-        "word_n",
-        "word",
-        "syllable_n",
-        "syllable",
-        "t_begin",
-        "t_end",
-    ))
+    csv_w = csv.DictWriter(
+        sys.stdout,
+        fieldnames = (
+            "line_n",
+            "word_n",
+            "word",
+            "syllable_n",
+            "syllable",
+            "t_begin",
+            "t_end",
+        ),
+        lineterminator = "\n",
+    )
     csv_w.writeheader()
 
     prev_line_interval = None
