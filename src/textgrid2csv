@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+
+# Extracts syllable intervals from a Praat TextGrid file containing interval
+# tiers "line", "word", and "syllable", and writes them as CSV with one syllable
+# per row.
+#
+# The intervals must be hierarchical: "word" intervals must be contained
+# entirely within a "line" interval, and the beginning of the first "word" and
+# the end of the last "word" in a "line" must coincide exactly with the
+# beginning and end of that "line" interval.
+#
+#   |             line              |
+#   |   word    |  |      word      |
+#   |syl.| |syl.|  |syl.|syl.| |syl.|
+#
+# The text of "line" intervals should be a line number. The text of "word" and
+# "syllable" intervals should be the text of the respective word or syllable.
+#
+# Usage:
+#   textgrid2csv INPUT.TextGrid > OUTPUT.csv
+
+import csv
+import getopt
+import sys
+
+import textgrids
+
+def usage(file = sys.stdout):
+    print(f"""\
+Usage: {sys.argv[0]} INPUT.TextGrid > OUTPUT.csv
+""", end="", file=file)
+
+def process(tg, tier_names):
+    tiers = [tg[tier_name] for tier_name in tier_names]
+    yield from process2(tiers, None, None)
+
+def process2(tiers, xmin, xmax):
+    this_tier, *sub_tiers = tiers
+
+    for interval in this_tier:
+        if xmin is not None and interval.xmin < xmin:
+            continue
+        if xmax is not None and interval.xmax > xmax:
+            continue
+        if not interval.text:
+            continue
+
+        if sub_tiers:
+            sub_intervals = list(process2(sub_tiers, interval.xmin, interval.xmax))
+
+            # The beginning of the first syllable must coincide with the
+            # beginning of the parent interval, and the end of the last
+            # subinterval must coincide with the end of the parent interval.
+            assert sub_intervals[0][0].xmin == interval.xmin
+            assert sub_intervals[-1][0].xmax == interval.xmax
+
+            for sub_interval in sub_intervals:
+                yield (interval,) + sub_interval
+        else:
+            yield (interval,)
+
+if __name__ == "__main__":
+    try:
+        opts, (textgrid_filename,) = getopt.gnu_getopt(sys.argv[1:], "h", ("help",))
+    except ValueError:
+        usage(sys.stderr)
+        sys.exit(1)
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit(0)
+
+    tg = textgrids.TextGrid()
+    tg.read(textgrid_filename)
+
+    csv_w = csv.DictWriter(sys.stdout, fieldnames = (
+        "line_n",
+        "word_n",
+        "word",
+        "syllable_n",
+        "syllable",
+        "t_begin",
+        "t_end",
+    ))
+    csv_w.writeheader()
+
+    prev_line_interval = None
+    prev_word_interval = None
+    for line_interval, word_interval, syllable_interval in process(tg, ("line", "word", "syllable")):
+        if line_interval is not prev_line_interval:
+            word_n = 0
+        if word_interval is not prev_word_interval:
+            word_n += 1
+            syllable_n = 0
+        syllable_n += 1
+
+        prev_line_interval = line_interval
+        prev_word_interval = word_interval
+
+        csv_w.writerow({
+            "line_n": line_interval.text,
+            "word_n": word_n,
+            "word": word_interval.text,
+            "syllable_n": syllable_n,
+            "syllable": syllable_interval.text,
+            "t_begin": f"{syllable_interval.xmin:.6f}",
+            "t_end": f"{syllable_interval.xmax:.6f}",
+        })
