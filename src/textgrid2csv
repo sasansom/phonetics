@@ -22,6 +22,7 @@
 import csv
 import getopt
 import sys
+import unicodedata
 
 import textgrids
 
@@ -58,6 +59,9 @@ def process2(tiers, xmin, xmax):
                 yield (interval,) + sub_interval
         else:
             yield (interval,)
+
+def normalize(s):
+    return unicodedata.normalize("NFD", s)
 
 if __name__ == "__main__":
     try:
@@ -98,11 +102,11 @@ if __name__ == "__main__":
         prev_word_interval = word_interval
 
         csv_w.writerow({
-            "line_n": line_interval.text,
+            "line_n": normalize(line_interval.text),
             "word_n": word_n,
-            "word": word_interval.text,
+            "word": normalize(word_interval.text),
             "syllable_n": syllable_n,
-            "syllable": syllable_interval.text,
+            "syllable": normalize(syllable_interval.text),
             "t_begin": f"{syllable_interval.xmin:.6f}",
             "t_end": f"{syllable_interval.xmax:.6f}",
         })
