@@ -16,8 +16,11 @@
 # The text of "line" intervals should be a line number. The text of "word" and
 # "syllable" intervals should be the text of the respective word or syllable.
 #
+# The --column option lets you insert additional columns into the output CSV.
+# --column may be used multiple times.
+#
 # Usage:
-#   textgrid2csv INPUT.TextGrid > OUTPUT.csv
+#   textgrid2csv --column NAME=VALUE INPUT.TextGrid > OUTPUT.csv
 
 import csv
 import getopt
@@ -28,7 +31,7 @@ import textgrids
 
 def usage(file = sys.stdout):
     print(f"""\
-Usage: {sys.argv[0]} INPUT.TextGrid > OUTPUT.csv
+Usage: {sys.argv[0]} --column NAME=VALUE INPUT.TextGrid > OUTPUT.csv
 """, end="", file=file)
 
 def process(tg, tier_names):
@@ -63,14 +66,53 @@ def process2(tiers, xmin, xmax):
 def normalize(s):
     return unicodedata.normalize("NFD", s)
 
+# Split a string into a section before and after the first '=', taking care of
+# backslash escapes on both sides.
+def split_equals(s):
+    i = 0
+
+    key = []
+    while i < len(s):
+        c = s[i]
+        if c == "=":
+            break
+        if c == "\\":
+            i += 1
+            if not (i < len(s)):
+                raise ValueError("{!r} at end of string".format("\\"))
+        key.append(c)
+        i += 1
+    else:
+        raise ValueError(f"no {'='!r} found")
+
+    # Skip the '='.
+    i += 1
+
+    value = []
+    while i < len(s):
+        c = s[i]
+        if c == "\\":
+            i += 1
+            if not (i < len(s)):
+                raise ValueError("{!r} at end of string".format("\\"))
+        value.append(c)
+        i += 1
+
+    return "".join(key), "".join(value)
+
 if __name__ == "__main__":
+    extra_columns = {}
+
     try:
-        opts, (textgrid_filename,) = getopt.gnu_getopt(sys.argv[1:], "h", ("help",))
+        opts, (textgrid_filename,) = getopt.gnu_getopt(sys.argv[1:], "c:h", ("column=", "help",))
     except ValueError:
         usage(sys.stderr)
         sys.exit(1)
     for o, a in opts:
-        if o in ("-h", "--help"):
+        if o in ("-c", "--column"):
+            key, value = split_equals(a)
+            extra_columns[key] = value
+        elif o in ("-h", "--help"):
             usage()
             sys.exit(0)
 
@@ -79,7 +121,7 @@ if __name__ == "__main__":
 
     csv_w = csv.DictWriter(
         sys.stdout,
-        fieldnames = (
+        fieldnames = tuple(extra_columns.keys()) + (
             "line_n",
             "word_n",
             "word",
@@ -105,7 +147,7 @@ if __name__ == "__main__":
         prev_line_interval = line_interval
         prev_word_interval = word_interval
 
-        csv_w.writerow({
+        csv_w.writerow(dict(extra_columns, **{
             "line_n": normalize(line_interval.text),
             "word_n": word_n,
             "word": normalize(word_interval.text),
@@ -113,4 +155,4 @@ if __name__ == "__main__":
             "syllable": normalize(syllable_interval.text),
             "t_begin": f"{syllable_interval.xmin:.6f}",
             "t_end": f"{syllable_interval.xmax:.6f}",
-        })
+        }))
