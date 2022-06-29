@@ -29,3 +29,10 @@ https://sasansom.github.io/sedes/odyssey_all.html#book-9-line-437
 * 9.449: ποίης segmentation poi-es or po-ies
 * 9.453: ἐξαλάωσε is –⏑⏑––, seems to want to be ἐξ-α-λά-ω-σε not ἐ-ξα-λά-ω-σε, but the former breaks the rule that syllables should begin with a consonant when possible
 * 9.457: something similar to 453, ἠλασκάζει –––– wants to be ἠ-λασ-κάζ-ει not ἠ-λασ-κά-ζει
+
+## librivox_odyssey_9.437-463.mp3
+
+Ἑλένη Κεμικτσή
+Odyssey 9.437–463
+https://librivox.org/book-9-of-odyssey-by-homer/
+https://archive.org/download/odyssey09_1809_librivox/odyssey09_01_homer_128kb.mp3
