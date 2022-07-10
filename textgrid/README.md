@@ -32,7 +32,11 @@ https://sasansom.github.io/sedes/odyssey_all.html#book-9-line-437
 
 ## librivox_odyssey_9.437-463.mp3
 
-Ἑλένη Κεμικτσή
+Ἑλένη Κεμικτσή (Hélène Kémiktsi)
 Odyssey 9.437–463
 https://librivox.org/book-9-of-odyssey-by-homer/
 https://archive.org/download/odyssey09_1809_librivox/odyssey09_01_homer_128kb.mp3
+
+* 9.443: εἰροπόκων pronounced like εἰροκόπων
+* 9.449: ποίης pretty clearly poi-es
+* 9.457: there is silence between the syllables of ὅππῃ, but it may be better to attribute the silence to the first syllable, in order to convey the lengthening caused by gemination
