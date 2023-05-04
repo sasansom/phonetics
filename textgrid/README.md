@@ -40,3 +40,16 @@ https://archive.org/download/odyssey09_1809_librivox/odyssey09_01_homer_128kb.mp
 * 9.443: εἰροπόκων pronounced like εἰροκόπων
 * 9.449: ποίης pretty clearly poi-es
 * 9.457: there is silence between the syllables of ὅππῃ, but it may be better to attribute the silence to the first syllable, in order to convey the lengthening caused by gemination
+
+## Other known sources
+
+* David Chamberlain, U. of Oregon https://archive.org/search.php?query=creator%3A%22David%20Chamberlain%22
+* Pearl C. Wilson https://archive.org/details/lp_the-golden-treasury-of-greek-poetry-and-pr_pearl-c-wilson
+  * Iliad 1–303
+  * Odyssey 1.1–10
+  * Odyssey 5.201–224
+  * Odyssey 6.20–68
+  * Odyssey 11.471–491
+  * Hymn to Aphrodite
+* Patrick Boyd https://archive.org/details/hmrio/The+Odyssey+by+Homer/Excerpt+from+The+Odyssey+in+Ancient+Greek.mp3
+  * Odyssey 1.1–21
